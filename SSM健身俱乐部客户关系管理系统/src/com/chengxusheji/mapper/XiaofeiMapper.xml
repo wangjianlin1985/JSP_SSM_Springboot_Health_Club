@@ -1,0 +1,49 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.XiaofeiMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加会员消费记录 -->
+	<insert id="addXiaofei" parameterType="xiaofei">
+		insert into t_xiaofei(xiaofeiName,xiaofeiDesc,xiaofeiMoney,memberObj,xiaofeiTime,dqsj,xiaofeiMemo) values 
+		(#{xiaofeiName},#{xiaofeiDesc},#{xiaofeiMoney},#{memberObj.user_name},#{xiaofeiTime},#{dqsj},#{xiaofeiMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询会员消费记录 -->
+	<select id="queryXiaofei" resultMap="xiaofeiMap" >
+		select t_xiaofei.* from t_xiaofei,t_userInfo ${where} and t_xiaofei.memberObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="xiaofeiMap" type="xiaofei">
+        <id property="xiaofeiId" column="xiaofeiId" />
+        <association property="memberObj" column="memberObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有会员消费记录 -->
+	<select id="queryXiaofeiList" resultMap="xiaofeiMap" >
+		select t_xiaofei.* from t_xiaofei,t_userInfo ${where} and t_xiaofei.memberObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的会员消费记录数 -->
+	<select id="queryXiaofeiCount" resultType="int">
+		select count(*) from t_xiaofei,t_userInfo ${where} and t_xiaofei.memberObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个会员消费记录 -->
+	<select id="getXiaofei" parameterType="int" resultMap="xiaofeiMap">
+		select * from t_xiaofei where t_xiaofei.xiaofeiId = #{xiaofeiId}
+	</select>
+
+	<!-- 更新会员消费记录 -->
+	<update id="updateXiaofei" parameterType="xiaofei">
+		update t_xiaofei set xiaofeiName=#{xiaofeiName},xiaofeiDesc=#{xiaofeiDesc},xiaofeiMoney=#{xiaofeiMoney},memberObj=#{memberObj.user_name},xiaofeiTime=#{xiaofeiTime},dqsj=#{dqsj},xiaofeiMemo=#{xiaofeiMemo} where xiaofeiId = #{xiaofeiId}
+	</update>
+
+	<!-- 删除会员消费记录 -->
+	<delete id="deleteXiaofei" parameterType="int">
+		delete from t_xiaofei where xiaofeiId=#{xiaofeiId}
+	</delete>
+
+</mapper>

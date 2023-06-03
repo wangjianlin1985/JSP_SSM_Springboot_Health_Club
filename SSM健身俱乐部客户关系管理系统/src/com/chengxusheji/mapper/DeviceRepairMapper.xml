@@ -1,0 +1,49 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.DeviceRepairMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加设备维修记录 -->
+	<insert id="addDeviceRepair" parameterType="deviceRepair">
+		insert into t_deviceRepair(deviceObj,deviceQuestion,repairCount,repairPlace,custTime,costMoney,repairResult,repairMemo) values 
+		(#{deviceObj.deviceId},#{deviceQuestion},#{repairCount},#{repairPlace},#{custTime},#{costMoney},#{repairResult},#{repairMemo})
+	</insert>
+
+	<!-- 按照查询条件分页查询设备维修记录 -->
+	<select id="queryDeviceRepair" resultMap="deviceRepairMap" >
+		select t_deviceRepair.* from t_deviceRepair,t_device ${where} and t_deviceRepair.deviceObj = t_device.deviceId limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="deviceRepairMap" type="deviceRepair">
+        <id property="repairId" column="repairId" />
+        <association property="deviceObj" column="deviceObj" select="com.chengxusheji.mapper.DeviceMapper.getDevice" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有设备维修记录 -->
+	<select id="queryDeviceRepairList" resultMap="deviceRepairMap" >
+		select t_deviceRepair.* from t_deviceRepair,t_device ${where} and t_deviceRepair.deviceObj = t_device.deviceId
+	</select>
+
+    <!-- 按照查询条件的设备维修记录数 -->
+	<select id="queryDeviceRepairCount" resultType="int">
+		select count(*) from t_deviceRepair,t_device ${where} and t_deviceRepair.deviceObj = t_device.deviceId
+	</select>
+
+	<!-- 根据主键查询某个设备维修记录 -->
+	<select id="getDeviceRepair" parameterType="int" resultMap="deviceRepairMap">
+		select * from t_deviceRepair where t_deviceRepair.repairId = #{repairId}
+	</select>
+
+	<!-- 更新设备维修记录 -->
+	<update id="updateDeviceRepair" parameterType="deviceRepair">
+		update t_deviceRepair set deviceObj=#{deviceObj.deviceId},deviceQuestion=#{deviceQuestion},repairCount=#{repairCount},repairPlace=#{repairPlace},custTime=#{custTime},costMoney=#{costMoney},repairResult=#{repairResult},repairMemo=#{repairMemo} where repairId = #{repairId}
+	</update>
+
+	<!-- 删除设备维修记录 -->
+	<delete id="deleteDeviceRepair" parameterType="int">
+		delete from t_deviceRepair where repairId=#{repairId}
+	</delete>
+
+</mapper>
